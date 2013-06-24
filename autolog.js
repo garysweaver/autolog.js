@@ -1,4 +1,4 @@
-// Autolog.js v0.0.4
+// Autolog.js v0.0.5
 // Copyright (c) 2013 Gary S. Weaver, released under the MIT license.
 // https://github.com/garysweaver/autolog.js
 
@@ -59,8 +59,8 @@ var Autolog = (function () {
     return valStr;
   }
 
-  var function_prototype_call_original = Function.prototype.call;
-  var function_prototype_call_override = function (self) {
+  var _functionPrototypeCallOriginal = Function.prototype.call;
+  var _functionPrototypeCallOverride = function (self) {
     try {
       var obj = typeof self === 'string' ? '"' + self + '"' : self,
           functionName = (typeof this === 'function') ? getFunctionName(this) : this,
@@ -129,9 +129,9 @@ var Autolog = (function () {
   };
 
   return {
-    VERSION:'0.0.4',
-    on:function(){Function.prototype.call = function_prototype_call_override;},
-    off:function(){Function.prototype.call = function_prototype_call_original;},
+    VERSION:'0.0.5',
+    on:function(){Function.prototype.call = _functionPrototypeCallOverride;},
+    off:function(){Function.prototype.call = _functionPrototypeCallOriginal;},
     includeFunctionBodies:function(val){_includeFunctionBodies = val;},
     includeCallerLocation:function(val){_includeCallerLocation = val;},
     includeCallStack:function(val){_includeCallStack = val;},
