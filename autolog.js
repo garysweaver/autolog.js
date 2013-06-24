@@ -1,4 +1,4 @@
-// Autolog.js v0.0.2
+// Autolog.js v0.0.3
 // Copyright (c) 2013 Gary S. Weaver, released under the MIT license.
 // https://github.com/garysweaver/autolog.js
 
@@ -10,7 +10,7 @@ var Autolog = (function () {
       _includeCallStack = false;
 
   return {
-    VERSION:'0.0.2',
+    VERSION:'0.0.3',
     on:function(){_running = true;},
     off:function(){_running = false;},
     running:function(){return _running;},
@@ -109,37 +109,34 @@ var Autolog = (function () {
             
             if (stackData) {
               messageLines = stackData.toString().split("\n");
-            }
-            else {
-              console.log("Autolog.js can't get call stack (ex.stack || ex.stacktrace || ex.message) was not truthy.");
-            }
 
-            for (var i = 0, len = messageLines.length; i < len; i++) {
-              var thisLine = messageLines[i];
-              thisLine = thisLine.trim();
+              for (var i = 0, len = messageLines.length; i < len; i++) {
+                var thisLine = messageLines[i];
+                thisLine = thisLine.trim();
 
-              if (thisLine.indexOf('autolog.js') == -1 &&
-                   (thisLine.indexOf('ine ') > -1 ||
-                    thisLine.indexOf('unction') > -1 ||
-                    thisLine.indexOf('at ') > -1 ||
-                    thisLine.indexOf('eval ') > -1 ||
-                    (thisLine.indexOf('@') > -1 && thisLine.indexOf(':') > -1))) {
-                if (Autolog.getIncludeCallerLocation() && !gotSource) {
-                  line += '  source: ' + thisLine;
-                  gotSource = true;
-                }
-                
-                if (Autolog.getIncludeCallStack()) {
-                  cleanStack += "\n " + thisLine;
-                }
-                else {
-                  break;
+                if (thisLine.indexOf('autolog.js') == -1 &&
+                     (thisLine.indexOf('ine ') > -1 ||
+                      thisLine.indexOf('unction') > -1 ||
+                      thisLine.indexOf('at ') > -1 ||
+                      thisLine.indexOf('eval ') > -1 ||
+                      (thisLine.indexOf('@') > -1 && thisLine.indexOf(':') > -1))) {
+                  if (Autolog.getIncludeCallerLocation() && !gotSource) {
+                    line += '  source: ' + thisLine;
+                    gotSource = true;
+                  }
+                  
+                  if (Autolog.getIncludeCallStack()) {
+                    cleanStack += "\n " + thisLine;
+                  }
+                  else {
+                    break;
+                  }
                 }
               }
-            }
 
-            if (Autolog.getIncludeCallStack() && cleanStack) {
-              line += '  callStack: ' + cleanStack;
+              if (Autolog.getIncludeCallStack() && cleanStack) {
+                line += '  callStack: ' + cleanStack;
+              }
             }
           }
         }
@@ -148,16 +145,10 @@ var Autolog = (function () {
       }
     } catch (logfail) {
       if (typeof console !== 'undefined') {
-        console.log("autolog failure: " + logfail);
+        console.log("Autolog.js failure: " + logfail);
       }
     }
 
-    if (arguments.length > 0) {
-      // from http://stackoverflow.com/a/5244434
-      return this.apply(self, Array.prototype.slice.apply(arguments, [1]));
-    }
-    else {
-      return this.apply(self, Array.prototype.slice.apply(arguments));
-    }
+    return this.apply(self, arguments);
   }
 })();

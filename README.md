@@ -15,6 +15,10 @@ Original direction came from this [answer][answer] from HBP on StackOverflow.
 
 Submit a pull request if you'd like to clean it up, extend it, fix it, make it available to npm/node, bower, etc.
 
+*** Under Development ***
+
+Note: please submit any issues you have, hopefully with a corresponding PR. This library is still under development and may not work properly.
+
 ### Usage
 
 To turn on:
