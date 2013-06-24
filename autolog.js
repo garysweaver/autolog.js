@@ -1,4 +1,4 @@
-// Autolog.js v0.0.3
+// Autolog.js v0.0.4
 // Copyright (c) 2013 Gary S. Weaver, released under the MIT license.
 // https://github.com/garysweaver/autolog.js
 
@@ -9,28 +9,8 @@ var Autolog = (function () {
       _includeCallerLocation = true,
       _includeCallStack = false;
 
-  return {
-    VERSION:'0.0.3',
-    on:function(){_running = true;},
-    off:function(){_running = false;},
-    running:function(){return _running;},
-    includeFunctionBodies:function(val){_includeFunctionBodies = val;},
-    getIncludeFunctionBodies:function(){return _includeFunctionBodies;},
-    includeCallerLocation:function(val){_includeCallerLocation = val;},
-    getIncludeCallerLocation:function(){return _includeCallerLocation;},
-    includeCallStack:function(val){_includeCallStack = val;},
-    getIncludeCallStack:function(){return _includeCallStack;}
-  }
-
-})();
-
-
-(function () {
-
   function getFunctionName(f) {
-
     if (f) {
-
       var name = f.toString().substr(9);
       name = name.substr(0, name.indexOf('('));
 
@@ -46,11 +26,9 @@ var Autolog = (function () {
   }
 
   function cleanValue(val) {
-
     var valStr = '' + val;
 
-    if (!Autolog.getIncludeFunctionBodies()) {
-
+    if (!_includeFunctionBodies) {
       var result = '',
           braceDepth = 0;
 
@@ -81,62 +59,60 @@ var Autolog = (function () {
     return valStr;
   }
 
-  Function.prototype.call = function (self) {
-
+  var function_prototype_call_original = Function.prototype.call;
+  var function_prototype_call_override = function (self) {
     try {
-      if (Autolog.running()) {
-        var obj = typeof self === 'string' ? '"' + self + '"' : self,
-            functionName = (typeof this === 'function') ? getFunctionName(this) : this,
-            line = obj + '.' + functionName + ' (',
-            wrapper = null; 
-        
-        for (var i = 1; i < arguments.length; i++) {
-          wrapper = (typeof arguments[i] === 'string' ? '"' : '');
-          line += (i > 1 ? ', ' : '') + '(' + (typeof arguments[i]) + ')' + wrapper + cleanValue(arguments[i]) + wrapper;
+      var obj = typeof self === 'string' ? '"' + self + '"' : self,
+          functionName = (typeof this === 'function') ? getFunctionName(this) : this,
+          line = obj + '.' + functionName + ' (',
+          wrapper = null; 
+      
+      for (var i = 1; i < arguments.length; i++) {
+        wrapper = (typeof arguments[i] === 'string' ? '"' : '');
+        line += (i > 1 ? ', ' : '') + '(' + (typeof arguments[i]) + ')' + wrapper + cleanValue(arguments[i]) + wrapper;
+      }
+
+      line += ')';
+
+      if (_includeCallerLocation || _includeCallStack) {
+        try {
+          throw new Error();
         }
+        catch (ex) {
+          var gotSource = false,
+              cleanStack = '',
+              messageLines = '',
+              stackData = (ex.stack || ex.stacktrace || ex.message);
+          
+          if (stackData) {
+            messageLines = stackData.toString().split("\n");
 
-        line += ')';
+            for (var i = 0, len = messageLines.length; i < len; i++) {
+              var thisLine = messageLines[i];
+              thisLine = thisLine.trim();
 
-        if (Autolog.getIncludeCallerLocation() || Autolog.getIncludeCallStack()) {
-          try {
-            throw new Error();
-          }
-          catch (ex) {
-            var gotSource = false,
-                cleanStack = '',
-                messageLines = '',
-                stackData = (ex.stack || ex.stacktrace || ex.message);
-            
-            if (stackData) {
-              messageLines = stackData.toString().split("\n");
-
-              for (var i = 0, len = messageLines.length; i < len; i++) {
-                var thisLine = messageLines[i];
-                thisLine = thisLine.trim();
-
-                if (thisLine.indexOf('autolog.js') == -1 &&
-                     (thisLine.indexOf('ine ') > -1 ||
-                      thisLine.indexOf('unction') > -1 ||
-                      thisLine.indexOf('at ') > -1 ||
-                      thisLine.indexOf('eval ') > -1 ||
-                      (thisLine.indexOf('@') > -1 && thisLine.indexOf(':') > -1))) {
-                  if (Autolog.getIncludeCallerLocation() && !gotSource) {
-                    line += '  source: ' + thisLine;
-                    gotSource = true;
-                  }
-                  
-                  if (Autolog.getIncludeCallStack()) {
-                    cleanStack += "\n " + thisLine;
-                  }
-                  else {
-                    break;
-                  }
+              if (thisLine.indexOf('autolog.js') == -1 &&
+                   (thisLine.indexOf('ine ') > -1 ||
+                    thisLine.indexOf('unction') > -1 ||
+                    thisLine.indexOf('at ') > -1 ||
+                    thisLine.indexOf('eval ') > -1 ||
+                    (thisLine.indexOf('@') > -1 && thisLine.indexOf(':') > -1))) {
+                if (_includeCallerLocation && !gotSource) {
+                  line += '  source: ' + thisLine;
+                  gotSource = true;
+                }
+                
+                if (_includeCallStack) {
+                  cleanStack += "\n " + thisLine;
+                }
+                else {
+                  break;
                 }
               }
+            }
 
-              if (Autolog.getIncludeCallStack() && cleanStack) {
-                line += '  callStack: ' + cleanStack;
-              }
+            if (_includeCallStack && cleanStack) {
+              line += '  callStack: ' + cleanStack;
             }
           }
         }
@@ -150,5 +126,15 @@ var Autolog = (function () {
     }
 
     return this.apply(self, arguments);
+  };
+
+  return {
+    VERSION:'0.0.4',
+    on:function(){Function.prototype.call = function_prototype_call_override;},
+    off:function(){Function.prototype.call = function_prototype_call_original;},
+    includeFunctionBodies:function(val){_includeFunctionBodies = val;},
+    includeCallerLocation:function(val){_includeCallerLocation = val;},
+    includeCallStack:function(val){_includeCallStack = val;},
   }
+
 })();
