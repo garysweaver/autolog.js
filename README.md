@@ -1,6 +1,8 @@
 Autolog.js
 =====
 
+*Note: prototype hacking doesn't work well with libraries like AngularJS. If you are interested in a more compatible automatic console logging solution, take a look at [noisify][noisify].*
+
 Logs Function.prototype.call executions to console.log, with caller stack line or full caller stack, with optionally elipsized function bodies.
 
 This allows you see what is going on to a limited extent as Javascript is executed, similar to a trace log to console.
@@ -39,5 +41,6 @@ To turn off:
 
 Copyright (c) 2013 Gary S. Weaver, released under the [MIT license][lic].
 
+[noisify]: https://github.com/garysweaver/noisify
 [answer]: http://stackoverflow.com/a/5244434/178651
 [lic]: http://github.com/garysweaver/autolog.js/blob/master/LICENSE
