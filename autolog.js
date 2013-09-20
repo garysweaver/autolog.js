@@ -134,7 +134,7 @@ var Autolog = (function () {
     off:function(){Function.prototype.call = _functionPrototypeCallOriginal;},
     includeFunctionBodies:function(val){_includeFunctionBodies = val;},
     includeCallerLocation:function(val){_includeCallerLocation = val;},
-    includeCallStack:function(val){_includeCallStack = val;},
+    includeCallStack:function(val){_includeCallStack = val;}
   }
 
 })();
