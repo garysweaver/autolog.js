@@ -37,6 +37,11 @@ To turn off:
     Autolog.includeCallStack(false);
     Autolog.includeFunctionBodies(false);
 
+### Contributors
+
+* [Gary Weaver](https://github.com/garysweaver)
+* [Jonathan Beckwith](https://github.com/jonathan-beckwith)
+
 ### License
 
 Copyright (c) 2013 Gary S. Weaver, released under the [MIT license][lic].

@@ -1,4 +1,4 @@
-// Autolog.js v0.0.5
+// Autolog.js v0.0.6
 // Copyright (c) 2013 Gary S. Weaver, released under the MIT license.
 // https://github.com/garysweaver/autolog.js
 
